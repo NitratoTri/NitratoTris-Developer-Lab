@@ -19,6 +19,7 @@ Some work in this repository may be prepared with AI assistance. The repository 
 ## Current content
 
 - [Valid Anagram — Python](challenges/python/valid_anagram.py)
+- [Top K Frequent Elements — Python (Medium)](challenges/python/top_k_frequent_elements.md)
 
 ## License
 
