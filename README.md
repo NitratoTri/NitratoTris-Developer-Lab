@@ -20,6 +20,7 @@ Some work in this repository may be prepared with AI assistance. The repository 
 
 - [Valid Anagram — Python](challenges/python/valid_anagram.py)
 - [Top K Frequent Elements — Python (Medium)](challenges/python/top_k_frequent_elements.md)
+- [Merge Intervals — Java (Medium)](challenges/java/merge-intervals/README.md)
 - [LogLens — Python CLI project](projects/python/loglens/README.md)
 
 ## License
