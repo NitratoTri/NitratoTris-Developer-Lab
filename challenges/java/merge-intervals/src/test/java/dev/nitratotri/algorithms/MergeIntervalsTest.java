@@ -24,7 +24,7 @@ public final class MergeIntervalsTest {
     private static void standardExample() {
         assertIntervals(
                 new int[][] {{1, 6}, {8, 10}, {15, 18}},
-                MergeIntervalsmerge(new int[][] {{1, 3}, {2, 6}, {8, 10}, {15, 18}}));
+                MergeIntervals.merge(new int[][] {{1, 3}, {2, 6}, {8, 10}, {15, 18}}));
     }
 
     private static void unsortedInput() {
