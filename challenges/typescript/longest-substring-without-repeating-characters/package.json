@@ -1,0 +1,18 @@
+{
+  "name": "longest-substring-without-repeating-characters",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A TypeScript sliding-window solution to the longest substring without repeated characters problem.",
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/longest-substring.test.mjs",
+    "check": "npm run typecheck && npm test"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

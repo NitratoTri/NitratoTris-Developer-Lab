@@ -1,0 +1,33 @@
+name: Longest Substring TypeScript Checks
+
+on:
+  push:
+    paths:
+      - 'challenges/typescript/longest-substring-without-repeating-characters/**'
+      - '.github/workflows/longest-substring-typescript.yml'
+  pull_request:
+    paths:
+      - 'challenges/typescript/longest-substring-without-repeating-characters/**'
+      - '.github/workflows/longest-substring-typescript.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: challenges/typescript/longest-substring-without-repeating-characters
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install
+      - name: Type-check and test
+        run: npm run check
