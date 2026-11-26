@@ -1,0 +1,55 @@
+name: Inventory Operations Database
+
+on:
+  push:
+    paths:
+      - "projects/sql/inventory-operations-db/**"
+      - ".github/workflows/inventory-operations-db.yml"
+  pull_request:
+    paths:
+      - "projects/sql/inventory-operations-db/**"
+      - ".github/workflows/inventory-operations-db.yml"
+  workflow_dispatch:
+
+jobs:
+  database-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: inventory_ops
+          POSTGRES_USER: inventory_app
+          POSTGRES_PASSWORD: local_dev_only_change_me
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U inventory_app -d inventory_ops"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      PGPASSWORD: local_dev_only_change_me
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: inventory_app
+      PGDATABASE: inventory_ops
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+
+      - name: Apply schema
+        run: psql -v ON_ERROR_STOP=1 -f projects/sql/inventory-operations-db/sql/01_schema.sql
+
+      - name: Load sample data
+        run: psql -v ON_ERROR_STOP=1 -f projects/sql/inventory-operations-db/sql/02_seed.sql
+
+      - name: Run database assertions
+        run: psql -v ON_ERROR_STOP=1 -f projects/sql/inventory-operations-db/tests/stock_movement_tests.sql
