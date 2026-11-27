@@ -1,0 +1,28 @@
+name: LRU Cache Java CI
+
+on:
+  push:
+    paths:
+      - "challenges/java/lru-cache/**"
+      - ".github/workflows/lru-cache-java.yml"
+  pull_request:
+    paths:
+      - "challenges/java/lru-cache/**"
+      - ".github/workflows/lru-cache.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Run LRU cache tests
+        working-directory: challenges/java/lru-cache
+        run: ./run-tests.sh
