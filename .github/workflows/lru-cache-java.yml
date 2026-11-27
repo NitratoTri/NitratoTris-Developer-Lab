@@ -8,7 +8,7 @@ on:
   pull_request:
     paths:
       - "challenges/java/lru-cache/**"
-      - ".github/workflows/lru-cache.yml"
+      - ".github/workflows/lru-cache-java.yml"
 
 permissions:
   contents: read
