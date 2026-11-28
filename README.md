@@ -25,6 +25,7 @@ Some work in this repository may be prepared with AI assistance. The repository 
 - [Longest Substring Without Repeating Characters — TypeScript (Medium)](challenges/typescript/longest-substring-without-repeating-characters/README.md)
 - [LogLens — Python CLI project](projects/python/loglens/README.md)
 - [SupportDesk API — Java / Spring Boot](projects/java/supportdesk-api/README.md)
+- [SupportDesk Dashboard — Angular](projects/angular/supportdesk-dashboard/README.md)
 - [Inventory Operations Database — PostgreSQL / SQL](projects/sql/inventory-operations-db/README.md)
 
 ## License
