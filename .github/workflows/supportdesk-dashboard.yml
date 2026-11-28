@@ -1,0 +1,33 @@
+name: SupportDesk Dashboard CI
+
+on:
+  push:
+    paths:
+      - "projects/angular/supportdesk-dashboard/**"
+      - ".github/workflows/supportdesk-dashboard.yml"
+  pull_request:
+    paths:
+      - "projects/angular/supportdesk-dashboard/**"
+      - ".github/workflows/supportdesk-dashboard.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/angular/supportdesk-dashboard
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run helper tests
+        run: npm run test:helpers
+      - name: Build Angular application
+        run: npm run build
