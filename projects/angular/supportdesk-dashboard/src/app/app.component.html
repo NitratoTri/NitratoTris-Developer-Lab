@@ -1,0 +1,193 @@
+<div class="shell">
+  <header class="topbar">
+    <a class="brand" href="#inicio" aria-label="SupportDesk, inicio">
+      <span class="brand-mark">S</span>
+      <span>support<span class="brand-light">desk</span></span>
+    </a>
+    <div class="topbar-meta">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span>Panel de soporte</span>
+    </div>
+  </header>
+
+  <main id="inicio" class="content">
+    <section class="intro">
+      <div>
+        <p class="eyebrow">CENTRO DE OPERACIONES</p>
+        <h1>Gestión de incidencias</h1>
+        <p class="subtitle">Consulta, prioriza y resuelve las solicitudes de soporte.</p>
+      </div>
+      <span class="api-label"><span class="status-dot"></span> API REST</span>
+    </section>
+
+    <section class="metrics" aria-label="Resumen de la página actual">
+      <article class="metric-card">
+        <span class="metric-label">Incidencias abiertas</span>
+        <strong>{{ openCount() }}</strong>
+        <span class="metric-foot">En esta página</span>
+      </article>
+      <article class="metric-card">
+        <span class="metric-label">Prioridad urgente</span>
+        <strong>{{ urgentCount() }}</strong>
+        <span class="metric-foot">En esta página</span>
+      </article>
+      <article class="metric-card">
+        <span class="metric-label">Resueltas</span>
+        <strong>{{ resolvedCount() }}</strong>
+        <span class="metric-foot">En esta página</span>
+      </article>
+      <article class="metric-card metric-card-accent">
+        <span class="metric-label">Total de resultados</span>
+        <strong>{{ totalElements() }}</strong>
+        <span class="metric-foot">Con los filtros aplicados</span>
+      </article>
+    </section>
+
+    @if (notice()) {
+      <div class="notice" role="status">{{ notice() }}</div>
+    }
+    @if (error()) {
+      <div class="error-banner" role="alert">
+        <span>{{ error() }}</span>
+        <button class="text-button" type="button" (click)="loadTickets()">Reintentar</button>
+      </div>
+    }
+
+    <div class="workspace">
+      <section class="panel tickets-panel" aria-labelledby="tickets-title">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">SEGUIMIENTO</p>
+            <h2 id="tickets-title">Incidencias</h2>
+          </div>
+          <span class="result-count">{{ totalElements() }} resultados</span>
+        </div>
+
+        <div class="filters" aria-label="Filtros de incidencias">
+          <label>
+            <span>Estado</span>
+            <select [value]="statusFilter()" (change)="statusFilter.set($any($event.target).value)">
+              <option value="">Todos</option>
+              <option value="OPEN">Abierta</option>
+              <option value="IN_PROGRESS">En progreso</option>
+              <option value="RESOLVED">Resuelta</option>
+            </select>
+          </label>
+          <label>
+            <span>Prioridad</span>
+            <select [value]="priorityFilter()" (change)="priorityFilter.set($any($event.target).value)">
+              <option value="">Todas</option>
+              <option value="LOW">Baja</option>
+              <option value="MEDIUM">Media</option>
+              <option value="HIGH">Alta</option>
+              <option value="URGENT">Urgente</option>
+            </select>
+          </label>
+          <button class="button button-secondary filter-button" type="button" (click)="applyFilters()">Filtrar</button>
+          <button class="clear-button" type="button" (click)="clearFilters()">Limpiar</button>
+        </div>
+
+        @if (loading()) {
+          <div class="state-panel" role="status">Cargando incidencias…</div>
+        } @else if (tickets().length === 0) {
+          <div class="state-panel">
+            <strong>No hay incidencias para mostrar</strong>
+            <span>Prueba a cambiar los filtros o crea una nueva solicitud.</span>
+          </div>
+        } @else {
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Solicitud</th>
+                  <th scope="col">Prioridad</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">Creación</th>
+                  <th scope="col"><span class="visually-hidden">Acciones</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (ticket of tickets(); track ticket.id) {
+                  <tr>
+                    <td>
+                      <div class="ticket-title">{{ ticket.title }}</div>
+                      <div class="ticket-meta">#{{ ticket.id }} · {{ ticket.requesterEmail }}</div>
+                    </td>
+                    <td><span [class]="'priority-pill priority-' + ticket.priority.toLowerCase()">{{ priorityLabel(ticket.priority) }}</span></td>
+                    <td>
+                      <select class="status-select" [value]="ticket.status" [attr.aria-label]="'Estado de la incidencia ' + ticket.id" (change)="updateStatus(ticket, $any($event.target).value)">
+                        @for (status of statuses; track status) {
+                          <option [value]="status">{{ statusLabel(status) }}</option>
+                        }
+                      </select>
+                    </td>
+                    <td class="date-cell">{{ formatDate(ticket.createdAt) }}</td>
+                    <td><button class="delete-button" type="button" [attr.aria-label]="'Eliminar incidencia ' + ticket.id" (click)="deleteTicket(ticket)">Eliminar</button></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <span>Página {{ page() + 1 }} de {{ totalPages() }}</span>
+            <div class="pagination-actions">
+              <button class="button button-secondary" type="button" [disabled]="page() === 0 || loading()" (click)="goToPage(page() - 1)">Anterior</button>
+              <button class="button button-secondary" type="button" [disabled]="page() + 1 >= totalPages() || loading()" (click)="goToPage(page() + 1)">Siguiente</button>
+            </div>
+          </div>
+        }
+      </section>
+
+      <aside class="panel create-panel" aria-labelledby="create-title">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">NUEVA SOLICITUD</p>
+            <h2 id="create-title">Crear incidencia</h2>
+          </div>
+          <span class="plus-mark" aria-hidden="true">+</span>
+        </div>
+        <form [formGroup]="form" (ngSubmit)="createTicket()" novalidate>
+          <label class="field">
+            <span>Título</span>
+            <input type="text" formControlName="title" maxlength="120" placeholder="Ej. Error al iniciar sesión">
+            @if (form.controls.title.touched && form.controls.title.invalid) {
+              <small class="field-error">Introduce un título de hasta 120 caracteres.</small>
+            }
+          </label>
+          <label class="field">
+            <span>Correo del solicitante</span>
+            <input type="email" formControlName="requesterEmail" maxlength="254" placeholder="nombre@empresa.com">
+            @if (form.controls.requesterEmail.touched && form.controls.requesterEmail.invalid) {
+              <small class="field-error">Introduce un correo electrónico válido.</small>
+            }
+          </label>
+          <label class="field">
+            <span>Descripción</span>
+            <textarea formControlName="description" rows="5" maxlength="2000" placeholder="Describe el problema y los pasos para reproducirlo…"></textarea>
+            @if (form.controls.description.touched && form.controls.description.invalid) {
+              <small class="field-error">La descripción es obligatoria (máximo 2.000 caracteres).</small>
+            }
+          </label>
+          <label class="field">
+            <span>Prioridad</span>
+            <select formControlName="priority">
+              <option value="LOW">Baja</option>
+              <option value="MEDIUM">Media</option>
+              <option value="HIGH">Alta</option>
+              <option value="URGENT">Urgente</option>
+            </select>
+          </label>
+          <button class="button button-primary submit-button" type="submit" [disabled]="saving()">
+            {{ saving() ? 'Guardando…' : 'Crear incidencia' }}
+          </button>
+        </form>
+        <p class="form-note">Las nuevas solicitudes se registran con estado Abierta.</p>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <span>SupportDesk Dashboard</span>
+      <span>Interfaz Angular · API Spring Boot</span>
+    </footer>
+  </main>
+</div>
