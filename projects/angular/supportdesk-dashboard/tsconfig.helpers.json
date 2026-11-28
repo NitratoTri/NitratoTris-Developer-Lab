@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "rootDir": "src/app",
+    "outDir": ".tmp/helpers",
+    "lib": ["ES2022", "dom"]
+  },
+  "include": ["src/app/shared/ticket-format.ts", "src/app/ticket.models.ts"]
+}
